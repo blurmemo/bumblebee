@@ -335,6 +335,7 @@ class TrainArguments:
         else:
             self.output_dir = str(Path(self.output_dir).absolute())
         self.output_dir = os.path.expanduser(self.output_dir)
+        os.makedirs(self.output_dir, exist_ok=True)
 
         # default `train` = True
         if not self.train:
