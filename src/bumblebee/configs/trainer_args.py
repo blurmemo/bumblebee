@@ -490,7 +490,7 @@ class TrainArguments:
             if self.eval_steps is None:
                 self.eval_steps = len(eval_dataloader)
             elif self.eval_steps < 1:
-                self.eval_steps = int(self.eval_steps * interval_unit)
+                self.eval_steps = int(self.eval_steps * len(eval_dataloader))
             else:
                 self.eval_steps = int(self.eval_steps)
 
