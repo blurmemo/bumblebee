@@ -44,7 +44,6 @@ def train(command, extra_args):
     script_path = os.path.join(SCRIPTS_DIR, script_filename)
     # sys.executable == python exec
     cmd = [command, script_path] + list(extra_args)
-    print(cmd)
     subprocess.run(cmd)
 
 

@@ -1,8 +1,8 @@
 import argparse
 import logging
 
-from ..utils import load_module
-from ..trainer import Trainer
+from bumblebee.utils import load_module
+from bumblebee.trainer import Trainer
 
 
 
