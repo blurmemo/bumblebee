@@ -26,12 +26,12 @@ logger = logging.getLogger(__name__)
 
 def make_parser():
     parser = argparse.ArgumentParser(description="Bumblebee Trainer train.")
-    parser.add_argument("--args", type="str", required=True, help="Path to a py file that defines args, (model, dataloader, optimizer, scheduler, evaluate).")
-    parser.add_argument("--model", type="str", help="Path to a py file that defines `model=...`.")
-    parser.add_argument("--dataloader", type="str", help="Path to a py file that defines `train_dataloader=..., eval_dataloader=...`.")
-    parser.add_argument("--optimizer", type="str", help="Path to a py file that defines `optimizer=...`.")
-    parser.add_argument("--scheduler", type="str", help="Path to a py file that defines `scheduler=...`.")
-    parser.add_argument("--evaluate", type="str", help="Path to a py file that defines `evaluate=...` which is evaluation function.")
+    parser.add_argument("--args", type=str, required=True, help="Path to a py file that defines args, (model, dataloader, optimizer, scheduler, evaluate).")
+    parser.add_argument("--model", type=str, help="Path to a py file that defines `model=...`.")
+    parser.add_argument("--dataloader", type=str, help="Path to a py file that defines `train_dataloader=..., eval_dataloader=...`.")
+    parser.add_argument("--optimizer", type=str, help="Path to a py file that defines `optimizer=...`.")
+    parser.add_argument("--scheduler", type=str, help="Path to a py file that defines `scheduler=...`.")
+    parser.add_argument("--evaluate", type=str, help="Path to a py file that defines `evaluate=...` which is evaluation function.")
     args = parser.parse_args()
     return args
 
