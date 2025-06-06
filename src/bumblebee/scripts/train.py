@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from ..utils.import_utils import load_module
+from ..utils import load_module
 from ..trainer import Trainer
 
 
