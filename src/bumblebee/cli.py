@@ -15,15 +15,31 @@ def cli():
     pass
 
 
-@cli.command()
+@cli.command(help="")
 @click.option(
     "--command",
     type=click.Choice(["deepspeed", "torchrun"]),
     help="Allowed commands with `python(don't set), deepspeed, torchrun`",
     default=sys.executable,
 )
-@click.argument("extra_args", nargs=-1)
+@click.argument("extra_args", nargs=-1, ignore_unknown_options=True)
 def train(command, extra_args):
+    """
+    Train command runs `bumblebee.scripts.train.py` using different launchers:
+    Args:
+        --command Optional [deepspeed, torchrun]
+        --extra_args other arguments with `--name value...`
+
+    Examples:
+      bumblebee train --command deepspeed|torchrun .. --args args.py (
+        --model model.py
+        --dataloader dataloader.py
+        --optimizer optimizer.py
+        --scheduler scheduler.py
+        --evaluate evaluate.py
+        )
+
+    """
     script_filename = "train.py"
     script_path = os.path.join(SCRIPTS_DIR, script_filename)
     # sys.executable == python exec
