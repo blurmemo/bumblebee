@@ -32,13 +32,14 @@ def make_parser():
     parser.add_argument("--optimizer", type=str, help="Path to a py file that defines `optimizer=...`.")
     parser.add_argument("--scheduler", type=str, help="Path to a py file that defines `scheduler=...`.")
     parser.add_argument("--evaluate", type=str, help="Path to a py file that defines `evaluate=...` which is evaluation function.")
-    args = parser.parse_args()
-    return args
+    parser.add_argument()
+    args, unknown_args = parser.parse_known_args()
+    return args, unknown_args
 
 
 
 def main():
-    args_parsed = make_parser()
+    args_parsed, unknown_args_parsed = make_parser()
     arguments_path, model_path, dataloader_path, optimizer_path, scheduler_path, evaluate_path = args_parsed.args, args_parsed.model, args_parsed.dataloader, args_parsed.optimizer, args_parsed.scheduler, args_parsed.evaluate
     args_module = load_module(arguments_path)
     model_module = load_module(model_path) if model_path else args_module
