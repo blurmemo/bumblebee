@@ -238,6 +238,7 @@ class Trainer:
         logger.info(f"Epochs = {args.num_epochs:,}")
         logger.info(f"Max Steps = {args.max_steps:,}")
         # enter train loop
+        self.wait()
         self._inner_train_loop(model, args, train_dataloader, eval_dataloader, tracer)
 
         self._trace_summary(tracer, train_state=self.state, eval_state=self.eval_state)
@@ -416,10 +417,11 @@ class Trainer:
 
 
     def _evaluate_loop(self, model: nn.Module, dataloader: DataLoader, **kwargs) -> EvalOutput:
-        world_size = 1
+        rank, world_size = 0, 1
         enable_dist = dist.is_initialized()
         if enable_dist:
             world_size = dist.get_world_size()
+            rank = dist.get_rank()
         device = model.device
         # default eval_steps(max_eval_steps)  is dataloader total length
         max_steps = kwargs.get("eval_steps", len(dataloader))
@@ -436,7 +438,7 @@ class Trainer:
         step = -1
 
         ##### progress bar #####
-        pbar = tqdm(colour="green", desc=f"Eval Epoch", total=len(dataloader), dynamic_ncols=True)
+        pbar = tqdm(colour="green", desc=f"Eval Epoch(rank={rank})", total=len(dataloader), dynamic_ncols=True)
         ##### progress bar #####
 
         for _, batch in enumerate(dataloader):
@@ -630,6 +632,9 @@ class Trainer:
     def rank(self) -> int:
         return self.distributed_state.rank if self.enable_dist else 0
 
+    def wait(self):
+        if self.distributed_state is not None:
+            self.distributed_state.wait()
 
 
 
