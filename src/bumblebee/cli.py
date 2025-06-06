@@ -15,7 +15,7 @@ def cli():
     pass
 
 
-@cli.command(help="")
+@cli.command(help="Run model training.")
 @click.option(
     "--command",
     type=click.Choice(["deepspeed", "torchrun"]),
