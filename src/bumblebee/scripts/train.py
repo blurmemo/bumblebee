@@ -70,6 +70,8 @@ def main():
         evaluate=evaluate,
     )
 
+    logger.info("Starting training...")
+
     # Train!
     trainer.train()
 
