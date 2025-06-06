@@ -22,7 +22,7 @@ def cli():
     help="Allowed commands with `python(don't set), deepspeed, torchrun`",
     default=sys.executable,
 )
-@click.argument("extra_args", nargs=-1, ignore_unknown_options=True)
+@click.argument("extra_args", nargs=-1, type=click.UNPROCESSED)
 def train(command, extra_args):
     """
     Train command runs `bumblebee.scripts.train.py` using different launchers:
