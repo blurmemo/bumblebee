@@ -251,7 +251,7 @@ class Trainer:
         tracer
     ):
         # First Eval
-        if args.eval and not args.eval_skip_first:
+        if args.eval and not args.eval_skip_first and args.eval_delay == 0:
             logger.info("***** First Eval Running *****")
             # first eval does not save model.
             self._evaluate()
@@ -328,7 +328,7 @@ class Trainer:
                 )
 
                 # whether to eval
-                if args.eval and (global_step+1) % args.eval_intervals == 0 and (global_step+1) > args.eval_delay:
+                if args.eval and ((global_step+1) % args.eval_intervals == 0 and (global_step+1) > args.eval_delay or (global_step+1) == args.eval_delay):
                     # do eval
                     self._evaluate()
             pbar.close()
