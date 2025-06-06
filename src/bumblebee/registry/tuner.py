@@ -105,8 +105,18 @@ class TunerRegistry:
                     merge_weights=tuner_args.merge_weights,
                 ).to(module.weight.device).to(module.weight.dtype)
                 tmp.weight.data.copy_(module.weight.data)
-                tmp.bias.data.copy_(module.bias.data)
+                if module.bias is not None:
+                    tmp.bias.data.copy_(module.bias.data)
                 recursive_setattr(model, name, tmp)
+
+        # This enable input require grads function to make gradient checkpointing work for lora-only optimization for Huggingface
+        if hasattr(model, "enable_input_require_grads"):
+            model.enable_input_require_grads()
+        elif hasattr(model, "get_input_embeddings"):
+            def make_inputs_require_grad(module, input, output):
+                output.requires_grad_(True)
+            model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
+
         return model
 
 
