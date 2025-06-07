@@ -26,7 +26,7 @@ class LoRALayer:
         if lora_dropout > 0.:
             self.lora_dropout = nn.Dropout(p=lora_dropout)
         else:
-            self.lora_dropout = lambda x: x
+            self.lora_dropout = nn.Identity()
         # Mark the weight as unmerged
         self.merged = False
         self.merge_weights = merge_weights
@@ -73,11 +73,11 @@ class Linear(nn.Linear, LoRALayer):
         def T(w):
             return w.transpose(0, 1) if self.fan_in_fan_out else w
         nn.Linear.train(self, mode)
+        self.lora_dropout.train(mode)
         if mode:
             if self.merge_weights and self.merged:
                 # Make sure that the weights are not merged
                 if self.r > 0:
-                    print(self.lora_A, self.lora_B)
                     self.weight.data -= T(self.lora_B @ self.lora_A) * self.scaling
                 self.merged = False
         else:
