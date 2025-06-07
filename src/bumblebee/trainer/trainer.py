@@ -125,6 +125,8 @@ class Trainer:
 
         if self.distributed_state is not None:
             self.register_distributed()
+        else:
+            self.model.cuda()
 
         # enable gradient checkpointing
         if self.args.gradient_checkpointing:
