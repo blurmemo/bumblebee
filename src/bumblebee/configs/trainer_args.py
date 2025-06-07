@@ -546,7 +546,7 @@ class TrainArguments:
             device = dist_state.device
             self._n_gpu = dist_state.world_size
         else:
-            device = torch.device("cpu") if torch.cuda.is_available() else torch.device("cuda")
+            device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
             self._n_gpu = 1
         return device
 
