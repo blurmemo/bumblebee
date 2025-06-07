@@ -77,16 +77,13 @@ class Linear(nn.Linear, LoRALayer):
             if self.merge_weights and self.merged:
                 # Make sure that the weights are not merged
                 if self.r > 0:
-                    print("train")
-                    print(self.weight.device, self.lora_A.device, self.lora_B.device)
+                    print(self.lora_A, self.lora_B)
                     self.weight.data -= T(self.lora_B @ self.lora_A) * self.scaling
                 self.merged = False
         else:
             if self.merge_weights and not self.merged:
                 # Merge the weights and mark it
                 if self.r > 0:
-                    print("eval")
-                    print(self.weight.device, self.lora_A.device, self.lora_B.device)
                     self.weight.data += T(self.lora_B @ self.lora_A) * self.scaling
                 self.merged = True
 
