@@ -234,7 +234,7 @@ class Trainer:
         logger.info(f"Batch Size Per Device = {args.train_batch_size_per_device:,}")
         logger.info(f"Gradient Accumulation steps = {args.gradient_accumulation_steps}")
         logger.info(
-            f"Total Batch Size (w. parallel, distributed & accumulation) = {args.train_batch_size:,} ({args.distributed_state.world_size} devices)")
+            f"Total Batch Size (w. parallel, distributed & accumulation) = {args.train_batch_size:,}")
         logger.info(f"Epochs = {args.num_epochs:,}")
         logger.info(f"Max Steps = {args.max_steps:,}")
 
