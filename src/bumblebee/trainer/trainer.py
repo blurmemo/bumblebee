@@ -237,8 +237,11 @@ class Trainer:
             f"Total Batch Size (w. parallel, distributed & accumulation) = {args.train_batch_size:,} ({args.distributed_state.world_size} devices)")
         logger.info(f"Epochs = {args.num_epochs:,}")
         logger.info(f"Max Steps = {args.max_steps:,}")
-        # enter train loop
+
+        # wait for other ranks if enable dist
         self.wait()
+
+        # enter train loop
         self._inner_train_loop(model, args, train_dataloader, eval_dataloader, tracer)
 
         self._trace_summary(tracer, train_state=self.state, eval_state=self.eval_state)
@@ -414,6 +417,9 @@ class Trainer:
             if not self.args.save_model_only:
                 save_args.update({"optimizer": self.optimizer, "scheduler": self.lr_scheduler})
             self.save_checkpoint(**save_args)
+
+        # wait for other ranks if enable dist
+        self.wait()
 
 
     def _evaluate_loop(self, model: nn.Module, dataloader: DataLoader, **kwargs) -> EvalOutput:
