@@ -68,6 +68,8 @@ class TunerRegistry:
 
 
     def lora(self, model, tuner_args):
+        logger.warning("If you enable `deepspeed zero3`, set `LoRA.merge_weights=False` to avoid RuntimeError.")
+
         if isinstance(tuner_args, dict):
             layer_name = tuner_args.get("layer", None)
         elif isinstance(tuner_args, LoRAArguments):
