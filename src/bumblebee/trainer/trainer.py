@@ -170,7 +170,7 @@ class Trainer:
             f"tuner type is {self.args.tuner_type} in `Bumblebee registers Tuner Library`."
         )
         registry = TunerRegistry(tuner_type=self.args.tuner_type, tuner_args=self.args.tuner_args)
-        self.model = registry(self.model, dist_type=self.args.distributed_type)
+        self.model = registry(self.model)
 
 
     def register_amp(self):

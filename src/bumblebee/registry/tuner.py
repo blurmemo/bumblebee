@@ -53,10 +53,10 @@ class TunerRegistry:
             self.tuner_args = {}
 
 
-    def __call__(self, model, dist_type: Optional[DistributedType] = None):
+    def __call__(self, model):
         callback = self.MAPPING.get(self.tuner_type, None)
 
-        return model if callback is None else callback(model, self.tuner_args, dist_type)
+        return model if callback is None else callback(model, self.tuner_args)
 
 
 
@@ -67,7 +67,7 @@ class TunerRegistry:
         }
 
 
-    def lora(self, model, tuner_args, dist_type):
+    def lora(self, model, tuner_args):
         if isinstance(tuner_args, dict):
             layer_name = tuner_args.get("layer", None)
         elif isinstance(tuner_args, LoRAArguments):
@@ -86,15 +86,6 @@ class TunerRegistry:
 
         if isinstance(tuner_args, dict):
             tuner_args = ARGS(**tuner_args)
-
-        # recheck `tuner_args`
-        if dist_type == DistributedType.DEEPSPEED:
-            if model.zero_optimization() and model.zero_optimization_stage() == 3 and tuner_args.merge_weights:
-                logger.info(
-                    "You use `deepspeed` zero3 in LoRA and set `LoRA.merge_weights=True` which is wrong."
-                    "Reset `LoRA.merge_weights=False`."
-                )
-                tuner_args.merge_weights = False
 
         if not isinstance(tuner_args, ARGS):
             raise TypeError(
