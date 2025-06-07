@@ -229,7 +229,7 @@ class Trainer:
         eval_dataloader = self.eval_dataloader
         tracer = self.tracer
         # Train!
-        logger.info(f"***** Train Running(rank={self.rank}) *****")
+        logger.info(f"***** Train Running (rank={self.rank}) *****")
         logger.info(f"Trainable Parameters = {self.fetch_model_param(model, trainable=True):,}")
         logger.info(f"Batch Size Per Device = {args.train_batch_size_per_device:,}")
         logger.info(f"Gradient Accumulation steps = {args.gradient_accumulation_steps}")
@@ -255,9 +255,10 @@ class Trainer:
         eval_dataloader: "torch.utils.data.DataLoader",
         tracer
     ):
+        rank = self.rank
         # First Eval
         if args.eval and not args.eval_skip_first and args.eval_delay == 0:
-            logger.info("***** First Eval Running *****")
+            logger.info(f"***** First Eval Running (rank={rank}) *****")
             # first eval does not save model.
             self._evaluate()
 
@@ -267,7 +268,7 @@ class Trainer:
         grad_accum_steps = args.gradient_accumulation_steps
         num_epochs = args.num_epochs
         for epoch in range(num_epochs):
-            logger.info(f"***** Epoch: {epoch + 1}/{num_epochs} *****")
+            logger.info(f"***** Epoch: {epoch + 1}/{num_epochs} (rank={rank}) *****")
             if self.state.end: break
             dataloader_epoch = train_dataloader
             steps_epoch = len(dataloader_epoch)
@@ -327,7 +328,7 @@ class Trainer:
                 pbar.set_description(
                     f"Train Epoch: {epoch + 1}/{num_epochs}, "
                     f"Update Step: {pbar.n}/{pbar_total}, "
-                    f"Global Step: {global_step}/{max_steps}(no accum gard {grad_accum_steps})"
+                    f"Global Step: {global_step}/{max_steps}(without accum gard {grad_accum_steps})"
                     f"(loss: {loss_step.float()})"
                 )
 
@@ -355,7 +356,7 @@ class Trainer:
 
         # we need do the final evaluation
         if args.eval:
-            logger.info("***** Final Eval Running *****")
+            logger.info(f"***** Final Eval Running (rank={rank}) *****")
             # final evaluation.
             self._evaluate()
 
@@ -444,7 +445,7 @@ class Trainer:
         step = -1
 
         ##### progress bar #####
-        pbar = tqdm(colour="green", desc=f"Eval Epoch(rank={rank})", total=len(dataloader), dynamic_ncols=True)
+        pbar = tqdm(colour="green", desc=f"Evaluation", total=len(dataloader), dynamic_ncols=True)
         ##### progress bar #####
 
         for _, batch in enumerate(dataloader):
@@ -477,6 +478,11 @@ class Trainer:
             # del loss, # logits_batch
             # torch.cuda.empty_cache()
             pbar.update(1)
+            pbar.set_description(
+                f"Evaluation, "
+                f"Step: {pbar.n}/{pbar.total}, "
+                f"(loss: {loss.float()})"
+            )
         pbar.close()
 
         if enable_dist and torch.cuda.device_count() > 1:
@@ -486,6 +492,8 @@ class Trainer:
         effective_steps = max(step, 0.001)  # avoid ZeroDivide error
         eval_loss = eval_loss / effective_steps
         eval_loss = eval_loss / world_size
+
+        logger.info(f"Evaluation (rank={rank}), loss: {eval_loss}")
 
         metrics = {
             "step_loss": loss_steps,
