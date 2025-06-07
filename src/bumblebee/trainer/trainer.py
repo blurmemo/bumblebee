@@ -260,6 +260,8 @@ class Trainer:
             # first eval does not save model.
             self._evaluate()
 
+        # debug
+        print(f"model device: {model.device}, args device: {args.device}")
 
         # total steps
         global_step = -1
