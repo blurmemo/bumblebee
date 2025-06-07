@@ -229,7 +229,7 @@ class Trainer:
         eval_dataloader = self.eval_dataloader
         tracer = self.tracer
         # Train!
-        logger.info("***** Train Running *****")
+        logger.info(f"***** Train Running(rank={self.rank}) *****")
         logger.info(f"Trainable Parameters = {self.fetch_model_param(model, trainable=True):,}")
         logger.info(f"Batch Size Per Device = {args.train_batch_size_per_device:,}")
         logger.info(f"Gradient Accumulation steps = {args.gradient_accumulation_steps}")
