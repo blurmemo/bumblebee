@@ -5,7 +5,7 @@ from dataclasses import dataclass, field, asdict, fields
 from enum import Enum
 from functools import cached_property
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, Any
 import warnings
 import torch
 import logging
@@ -591,7 +591,6 @@ class TrainArguments:
         return self.tuner_type is not None
 
 
-
     def to_dict(self):
         """
         Serializes this instance while replace `Enum` by their values (for JSON serialization support). It obfuscates
@@ -612,6 +611,20 @@ class TrainArguments:
         Serializes this instance to a JSON string.
         """
         return json.dumps(self.to_dict(), indent=2)
+
+
+    def to_sanitized_dict(self) -> dict[str, Any]:
+        """
+        Sanitized serialization to use with TensorBoard’s hparams
+        """
+        d = self.to_dict()
+        d = {**d, **{"train_batch_size": self.train_batch_size, "eval_batch_size": self.eval_batch_size}}
+
+        valid_types = [bool, int, float, str]
+        if torch.cuda.is_available():
+            valid_types.append(torch.Tensor)
+
+        return {k: v if type(v) in valid_types else str(v) for k, v in d.items()}
 
 
 
