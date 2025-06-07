@@ -111,6 +111,9 @@ class TunerRegistry:
                     tmp.bias.data.copy_(module.bias.data)
                 recursive_setattr(model, name, tmp)
 
+        for name, module in model.named_modules():
+            print(name, module)
+
 
         # This enable input require grads function to make gradient checkpointing work for lora-only optimization for Huggingface
         if hasattr(model, "enable_input_require_grads"):
