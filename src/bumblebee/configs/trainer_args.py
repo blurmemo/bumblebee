@@ -604,7 +604,7 @@ class TrainArguments:
             if isinstance(v, Enum):
                 d[k] = v.value
             if isinstance(v, list) and len(v) > 0 and isinstance(v[0], Enum):
-                d[k] = [x.value for x in v]
+                d[k] = ", ".join([x.value for x in v])
         return d
 
     def to_json(self):
