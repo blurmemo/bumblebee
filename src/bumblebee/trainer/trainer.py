@@ -347,7 +347,7 @@ class Trainer:
             effective_steps = max(effective_steps, 0.001) # Avoid ZeroDivisionError
             loss_epoch = loss_epoch / effective_steps
             # update trainer_state every epoch by loss or others
-            self.state.update_epoch(loss_epoch, epoch=epoch, lr=self.fetch_lr())
+            self.state.update_epoch(loss_epoch.item(), epoch=epoch, lr=self.fetch_lr())
 
             # update lr every epoch manually
             self.lr_scheduler.step()
@@ -492,7 +492,7 @@ class Trainer:
             # "step_perplexity": perplexity_steps,
         }
 
-        return EvalOutput(step=step, loss=eval_loss, predictions=predictions, labels=labels, metrics=metrics)
+        return EvalOutput(step=step, loss=eval_loss.item(), predictions=predictions, labels=labels, metrics=metrics)
 
 
     def _to_device(self, batch: dict, device: torch.device) -> dict:
