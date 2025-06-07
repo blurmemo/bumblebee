@@ -109,7 +109,8 @@ class Trainer:
         ##### `TrainArguments` adapt after register dataloader #####
         self.args.adapt(self.train_dataloader, eval_dataloader=self.eval_dataloader)
 
-        self.model.cuda()
+        self.model.to(self.args.device)
+
         self.register_model()
 
         if self.args.tuner:
