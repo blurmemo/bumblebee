@@ -134,6 +134,7 @@ class Trainer:
             self.register_evaluate()
 
         if self.args.trace and (self.distributed_state is None or self.distributed_state.rank == 0):
+            print(self.distributed_state.rank)
             self.register_tracer()
 
     def register_dataloader(self):
