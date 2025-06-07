@@ -219,7 +219,7 @@ class Trainer:
 
     def register_tracer(self):
         registry = TracerRegistry(wandb_args=self.args.wandb_args)
-        self.tracer = registry(config_args=self.args)
+        self.tracer = registry(config_args=self.args.to_dict())
 
 
     def train(self):
