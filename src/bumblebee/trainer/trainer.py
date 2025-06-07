@@ -244,7 +244,8 @@ class Trainer:
         # enter train loop
         self._inner_train_loop(model, args, train_dataloader, eval_dataloader, tracer)
 
-        self._trace_summary(tracer, train_state=self.state, eval_state=self.eval_state)
+        if tracer is not None:
+            self._trace_summary(tracer, train_state=self.state, eval_state=self.eval_state)
 
     def _inner_train_loop(
         self,
