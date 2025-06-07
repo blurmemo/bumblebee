@@ -115,7 +115,8 @@ class TunerRegistry:
             if ("q_proj" in name or "v_proj" in name) and ("lora" in name or "bias" in name) and param.requires_grad is True:
                 pass
             else:
-                raise ValueError
+                if param.requires_grad is True:
+                    raise ValueError(name)
 
 
         # This enable input require grads function to make gradient checkpointing work for lora-only optimization for Huggingface
