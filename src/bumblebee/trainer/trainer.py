@@ -109,6 +109,7 @@ class Trainer:
         ##### `TrainArguments` adapt after register dataloader #####
         self.args.adapt(self.train_dataloader, eval_dataloader=self.eval_dataloader)
 
+        self.model.cuda()
         self.register_model()
 
         if self.args.tuner:
@@ -125,8 +126,6 @@ class Trainer:
 
         if self.distributed_state is not None:
             self.register_distributed()
-        else:
-            self.model.cuda()
 
         # enable gradient checkpointing
         if self.args.gradient_checkpointing:
