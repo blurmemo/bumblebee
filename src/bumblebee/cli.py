@@ -4,6 +4,7 @@ import sys
 import click
 import subprocess
 
+from pydantic.v1 import NoneStr
 
 MODULE_DIR = os.path.dirname(__file__)
 SCRIPTS_DIR = os.path.join(MODULE_DIR, "scripts")
@@ -18,9 +19,9 @@ def cli():
 @cli.command(help="Run model training.", context_settings=dict(ignore_unknown_options=True))
 @click.option(
     "--command",
-    type=click.Choice(["deepspeed", "torchrun"]),
+    type=str,
     help="Allowed commands with `python(don't set), deepspeed, torchrun`",
-    default=sys.executable,
+    default=None,
 )
 @click.argument("extra_args", nargs=-1, type=click.UNPROCESSED)
 def train(command, extra_args):
@@ -40,6 +41,12 @@ def train(command, extra_args):
         )
 
     """
+    allowed_commands = ["deepspeed", "torchrun"]
+    if command is None:
+        command = sys.executable
+    elif command not in allowed_commands:
+        raise click.BadParameter(f"Invalid --command: {command}, Allowed: deepspeed, torchrun, or no-set for python")
+
     script_filename = "train.py"
     script_path = os.path.join(SCRIPTS_DIR, script_filename)
     # sys.executable == python exec
