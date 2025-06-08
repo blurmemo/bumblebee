@@ -476,15 +476,15 @@ class Trainer:
             labels.extend(labels_batch)
             """
 
-            # empty cuda cache in order to avoid `OOM`
-            # del loss, # logits_batch
-            # torch.cuda.empty_cache()
             pbar.update(1)
             pbar.set_description(
                 f"Evaluation, "
                 f"Step: {pbar.n}/{pbar.total}, "
                 f"(loss: {loss.float()})"
             )
+            # empty cuda cache in order to avoid `OOM`
+            del batch, loss
+            torch.cuda.empty_cache()
         pbar.close()
 
         if enable_dist and torch.cuda.device_count() > 1:
