@@ -283,7 +283,7 @@ class TrainArguments:
         metadata={
             "help": (
                 "The logging strategy to use."
-                "no: don't log, auto: log every eval, epoch: every epoch and step: every X step."
+                "no: don't log, epoch: every epoch and step: every X step."
             )
         },
     )
