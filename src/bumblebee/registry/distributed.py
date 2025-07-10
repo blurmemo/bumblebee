@@ -3,6 +3,7 @@ from enum import Enum
 from functools import cached_property
 from typing import Optional
 
+import inspect
 import logging
 import torch
 import deepspeed
@@ -33,6 +34,37 @@ class DistributedArguments:
             if isinstance(v, list) and len(v) > 0 and isinstance(v[0], Enum):
                 d[k] = [x.value for x in v]
         return d
+
+    @classmethod
+    def from_dict(cls, **kwargs):
+        cls_fields = {f.name for f in fields(cls)}
+        cls_attr, extra_attr = {}, {}
+
+        for k, v in kwargs.items():
+            if k in cls_fields:
+                cls_field = cls.__dataclass_fields__[k]
+                if inspect.isfunction(cls_field.default_factory):
+                    cls_v = cls_field.default_factory()
+                else:
+                    cls_v = cls_field.default
+
+                if isinstance(cls_v, dict):
+                    cls_v.update(v)
+                else:
+                    cls_v = v  # int, bool etc.
+
+                cls_attr[k] = cls_v
+
+            else:
+                extra_attr[k] = v
+
+        instance = cls(**cls_attr)
+
+        for k, v in extra_attr.items():
+            setattr(instance, k, v)
+
+        return instance
+
 
 
 @dataclass
@@ -141,7 +173,7 @@ class DistributedRegistry:
         optimizer: Optional[torch.optim.Optimizer] = None,
         lr_scheduler: Optional[torch.optim.lr_scheduler.LRScheduler] = None,
     ):
-        dist_args = DeepSpeedArguments(**dist_args)
+        dist_args = DeepSpeedArguments.from_dict(**dist_args)
         wrappers = deepspeed.initialize(
             model=model,
             optimizer=optimizer,
