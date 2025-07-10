@@ -27,7 +27,6 @@ class WandbArguments(TracerArguments):
 
 
 
-
 class TracerRegistry:
     sdk = "wandb"
 
@@ -37,7 +36,7 @@ class TracerRegistry:
             self.wandb_args = {}
 
 
-    def __call__(self, config_args = None) -> "wandb.sdk.wandb_run.Run":
+    def __call__(self, config_args = None, output_dir = None) -> "wandb.sdk.wandb_run.Run":
         if isinstance(self.wandb_args, TracerArguments):
             self.wandb_args = asdict(self.wandb_args)
         project = self.wandb_args.get("project", None)
@@ -56,6 +55,9 @@ class TracerRegistry:
             )
 
         init_params_dict = self.wandb_args
+        if output_dir is not None:
+            init_params_dict["dir"] = output_dir
+
         run = wandb.init(**init_params_dict)
         if config_args is not None:
             run.config.update(config_args)
