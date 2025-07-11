@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass, field
 from functools import cached_property
 from typing import Optional, Union, List
@@ -98,7 +99,7 @@ class TunerRegistry:
         for name, module in model.named_modules():
             for param in module.parameters():
                 param.requires_grad = False
-            if isinstance(module, nn.Linear) and any(tn in name for tn in tuner_args.target_names):
+            if isinstance(module, nn.Linear) and any(re.search(tn, name) for tn in tuner_args.target_names):
                 tmp = Linear(
                     module.in_features,
                     module.out_features,
