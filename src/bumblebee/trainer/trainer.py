@@ -8,7 +8,6 @@ from datetime import datetime
 
 import math
 import torch
-import transformers
 from torch import nn
 import torch.distributed as dist
 from torch.utils.data import DataLoader
@@ -76,8 +75,6 @@ class Trainer:
         self.eval_state = EvalerState(self.args) if self.args.eval else None
         self.snapshot = SnapshotRegistry(output_dir=self.args.output_dir, limit=self.args.save_limit)
 
-        self.processor = transformers.AutoProcessor.from_pretrained("/mnt/share/ening/models/llama/llama_vision_11B_instruct/hf")
-
 
     def bind_args(self, args):
         if not isinstance(args, TrainArguments):
@@ -119,6 +116,9 @@ class Trainer:
         if self.args.tuner:
             self.register_tuner()
 
+        for name, param in self.model.named_parameters():
+            print(name, param.requires_grad)
+
         if self.args.amp:
             self.register_amp()
 
@@ -140,6 +140,7 @@ class Trainer:
 
         if self.args.trace and (self.distributed_state is None or self.distributed_state.rank == 0):
             self.register_tracer()
+
 
     def register_dataloader(self):
         train_batch_size_per_device = self.args.train_batch_size_per_device
@@ -284,8 +285,6 @@ class Trainer:
             pbar = tqdm(colour="blue", desc=f"Train Epoch: {epoch + 1}", total=pbar_total, dynamic_ncols=True)
 
             for _, batch in enumerate(dataloader_epoch):
-                print(f"rank={rank}, step={steps_epoch}, batch={len(batch)}")
-                print(self.processor.tokenizer.batch_decode(batch["input_ids"]))
                 global_step += 1  # start with zero
                 sync_step = (global_step + 1) % grad_accum_steps == 0 or (global_step + 1) == steps_epoch
                 if global_step == max_steps:
