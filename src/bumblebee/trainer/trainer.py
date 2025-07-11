@@ -116,6 +116,9 @@ class Trainer:
         if self.args.tuner:
             self.register_tuner()
 
+        for name, param in self.model.named_parameters():
+            print(name, param.requires_grad)
+
         if self.args.amp:
             self.register_amp()
 

@@ -32,6 +32,7 @@ class LoRAArguments(TunerArguments):
 @dataclass
 class LinearLoRAArguments(LoRAArguments):
     target_names: List[str] = field(default_factory=lambda: ["q_proj", "v_proj"])
+    bias: bool = False
 
 
 
@@ -108,6 +109,7 @@ class TunerRegistry:
                     lora_dropout=tuner_args.lora_dropout,
                     fan_in_fan_out=tuner_args.fan_in_fan_out,
                     merge_weights=tuner_args.merge_weights,
+                    bias=tuner_args.bias,
                 ).to(module.weight.device).to(module.weight.dtype)
                 tmp.weight.data.copy_(module.weight.data)
                 if module.bias is not None:

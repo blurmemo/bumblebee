@@ -44,9 +44,10 @@ class Linear(nn.Linear, LoRALayer):
         lora_dropout: float = 0.,
         fan_in_fan_out: bool = False, # Set this to True if the layer to replace stores weight like (fan_in, fan_out)
         merge_weights: bool = True,
+        bias: bool = False,
         **kwargs
     ):
-        nn.Linear.__init__(self, in_features, out_features, **kwargs)
+        nn.Linear.__init__(self, in_features, out_features, bias, **kwargs)
         LoRALayer.__init__(self, r=r, lora_alpha=lora_alpha, lora_dropout=lora_dropout, merge_weights=merge_weights)
 
         self.fan_in_fan_out = fan_in_fan_out
