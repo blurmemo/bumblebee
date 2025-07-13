@@ -215,7 +215,7 @@ class Trainer:
             train_batch_size_per_device=self.args.train_batch_size_per_device,
             gradient_accumulation_steps=self.args.gradient_accumulation_steps,
             max_grad_norm=self.args.max_grad_norm,
-            model_type=self.model_type,
+            model_dtype=self.model_dtype,
         )
 
     def register_evaluate(self):
@@ -627,7 +627,7 @@ class Trainer:
 
 
     @cached_property
-    def model_type(self) -> "torch.dtype":
+    def model_dtype(self) -> "torch.dtype":
         return self.model.dtype
 
     @cached_property
@@ -636,7 +636,7 @@ class Trainer:
 
     @cached_property
     def scale_grad(self) -> bool:
-        return self.model_type == torch.float16
+        return self.model_dtype == torch.float16
 
     @cached_property
     def enable_deepspeed(self) -> bool:
