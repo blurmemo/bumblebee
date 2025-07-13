@@ -122,9 +122,6 @@ class Trainer:
         if self.optimizer is None:
             self.register_optimizer()
 
-        if self.rank == 0:
-            print(self.optimizer.param_groups)
-
         if self.lr_scheduler is None:
             self.register_scheduler()
 
