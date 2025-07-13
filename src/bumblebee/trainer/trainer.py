@@ -117,6 +117,11 @@ class Trainer:
         if self.args.tuner:
             self.register_tuner()
 
+        if self.rank == 0:
+            for name, param in self.model.named_parameters():
+                print(name, param.requires_grad, param.dtype)
+
+
         if self.args.amp:
             self.register_amp()
 
@@ -266,7 +271,6 @@ class Trainer:
             logger.info(f"***** First Eval Running (rank={rank}) *****")
             # first eval does not save model.
             self._evaluate()
-        processor = AutoProcessor.from_pretrained("/mnt/share/ening/models/llama/llama_vision_11B_instruct/hf")
 
         # total steps
         global_step = -1
@@ -284,16 +288,14 @@ class Trainer:
             pbar_total = steps_epoch // grad_accum_steps  # model update total steps
             pbar = tqdm(colour="blue", desc=f"Train Epoch: {epoch + 1}", total=pbar_total, dynamic_ncols=True)
 
+            print(f"=*20 {self.enable_deepspeed}")
+
             for _, batch in enumerate(dataloader_epoch):
                 global_step += 1  # start with zero
                 sync_step = (global_step + 1) % grad_accum_steps == 0 or (global_step + 1) == steps_epoch
                 if global_step == max_steps:
                     self.state.max_steps_reached = True
                     break
-
-                print("="*20)
-                print(processor.tokenizer.batch_decode(batch["input_ids"]))
-                print("="*20)
 
                 batch = self._to_device(batch, device=args.device)
                 loss_step = self.train_step(model, inputs=batch)  # loss_step = loss.detach()
