@@ -139,7 +139,6 @@ class Trainer:
         if self.args.trace and (self.distributed_state is None or self.distributed_state.rank == 0):
             self.register_tracer()
 
-        self.processor = AutoProcessor.from_pretrained("/mnt/share/ening/models/llama/llama_vision_11B_instruct/hf")
 
 
     def register_dataloader(self):
@@ -267,6 +266,7 @@ class Trainer:
             logger.info(f"***** First Eval Running (rank={rank}) *****")
             # first eval does not save model.
             self._evaluate()
+        processor = AutoProcessor.from_pretrained("/mnt/share/ening/models/llama/llama_vision_11B_instruct/hf")
 
         # total steps
         global_step = -1
@@ -292,8 +292,7 @@ class Trainer:
                     break
 
                 print("="*20)
-                print(self.processor)
-                print(self.processor.decode(batch["input_ids"]))
+                print(processor.tokenizer.batch_decode(batch["input_ids"]))
                 print("="*20)
 
                 batch = self._to_device(batch, device=args.device)
