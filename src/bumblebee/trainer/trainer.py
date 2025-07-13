@@ -12,6 +12,7 @@ from torch import nn
 import torch.distributed as dist
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+from transformers import AutoProcessor
 
 from ..configs import TrainArguments
 
@@ -137,6 +138,8 @@ class Trainer:
 
         if self.args.trace and (self.distributed_state is None or self.distributed_state.rank == 0):
             self.register_tracer()
+
+        self.processor = AutoProcessor.from_pretrained("/mnt/share/ening/models/llama/llama_vision_11B_instruct/hf")
 
 
     def register_dataloader(self):
@@ -287,6 +290,11 @@ class Trainer:
                 if global_step == max_steps:
                     self.state.max_steps_reached = True
                     break
+
+                print("="*20)
+                print(self.processor.padding_side)
+                print(self.processor.decode(batch["input_ids"]))
+                print("="*20)
 
                 batch = self._to_device(batch, device=args.device)
                 loss_step = self.train_step(model, inputs=batch)  # loss_step = loss.detach()
