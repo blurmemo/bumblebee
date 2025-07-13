@@ -292,7 +292,7 @@ class Trainer:
                     break
 
                 print("="*20)
-                print(self.processor.padding_side)
+                print(self.processor)
                 print(self.processor.decode(batch["input_ids"]))
                 print("="*20)
 
