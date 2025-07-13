@@ -12,7 +12,6 @@ from torch import nn
 import torch.distributed as dist
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from transformers import AutoProcessor
 
 from ..configs import TrainArguments
 
@@ -117,11 +116,6 @@ class Trainer:
         if self.args.tuner:
             self.register_tuner()
 
-        if self.rank == 0:
-            for name, param in self.model.named_parameters():
-                print(name, param.requires_grad, param.dtype)
-
-
         if self.args.amp:
             self.register_amp()
 
@@ -215,6 +209,7 @@ class Trainer:
         # Use bumblebee library distributed
         registry = DistributedRegistry(self.distributed_state)
         # default use fp32 to model
+        print(f"="*20 + f"{self.model_type}")
         self.model, self.optimizer, _ = registry(
             model=self.model,
             optimizer=self.optimizer,
@@ -287,8 +282,6 @@ class Trainer:
             ##### progress bar #####
             pbar_total = steps_epoch // grad_accum_steps  # model update total steps
             pbar = tqdm(colour="blue", desc=f"Train Epoch: {epoch + 1}", total=pbar_total, dynamic_ncols=True)
-
-            print(f"=*20 {self.enable_deepspeed}")
 
             for _, batch in enumerate(dataloader_epoch):
                 global_step += 1  # start with zero
