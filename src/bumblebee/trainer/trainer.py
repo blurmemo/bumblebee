@@ -209,7 +209,6 @@ class Trainer:
         # Use bumblebee library distributed
         registry = DistributedRegistry(self.distributed_state)
         # default use fp32 to model
-        print(f"="*20 + f"{self.model_type}")
         self.model, self.optimizer, _ = registry(
             model=self.model,
             optimizer=self.optimizer,

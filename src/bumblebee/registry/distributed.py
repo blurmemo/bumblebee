@@ -153,6 +153,8 @@ class DistributedRegistry:
             }
         })
 
+        print(dist_args)
+
         callback = self.MAPPING[self.dist_type]
 
         return callback(dist_args, model, optimizer, lr_scheduler)
