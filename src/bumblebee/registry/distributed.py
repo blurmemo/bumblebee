@@ -153,7 +153,9 @@ class DistributedRegistry:
             }
         })
 
-        print(dist_args)
+        print(model_dtype)
+        print(model_dtype == torch.float16)
+        print(model_dtype == torch.bfloat16)
 
         callback = self.MAPPING[self.dist_type]
 
